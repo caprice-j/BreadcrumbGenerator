@@ -1,0 +1,156 @@
+<html language="ja">
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript">
+
+function page_onload()
+{
+  var total_height = 33;
+
+  var text_size = 20
+
+  var originX = 5;
+  var hxH = total_height - 5;  // hexagonal height
+  var hxW = 90;              // hexagonal width
+  var hxL = 20;               // left padding of inner text
+  var bPx = 1;                // border pixel
+  var mPx = 1;                // margin pixel
+  var hlupY = 5;
+  var hexBorderWidth = 1;
+  var htextY = 27;            // why this value????
+  var hexFocusColor  = "rgba( 70, 90,139,1)";
+  var hexFillColor   = "rgba(133,168,206,1)";
+  var hexBorderColor = "white";
+
+  var trW = 15;
+
+  // var sections = ["背景","関連研究","提案手法","評価","結論", "今後の課題"]
+  var sections = ["定立", "事例１", "事例２", "実践", "講義", "まとめ"]
+  var total_width = (hxW + 20) * sections.length
+  var padding = total_width / 33
+
+  sections.charwidth = [];
+  for( var i = 0; i < sections.length; ++i ){
+    if( i > 0 ){
+      sections.charwidth[i] = sections.charwidth[i-1] + sections[i].length + 2
+    }else{
+      sections.charwidth[i] = sections[i].length + 2
+    }
+  }
+  console.log(sections.charwidth)
+
+
+  for( var i = 0; i <= sections.length; ++i ){
+    var elem = document.createElement('canvas');
+    elem.id = 'bread' + i
+    elem.width  = total_width - 40
+    elem.height = total_height
+    var indexcanvas = document.getElementById('indexcanvas');
+    indexcanvas.appendChild(elem)
+    indexcanvas.appendChild( document.createElement('p') )
+  }
+
+  for( var focused = 0; focused <= sections.length; ++focused){
+
+    // draw rect parts in hexagonal objects
+    for( var i_hex = 0; i_hex < sections.length; ++ i_hex ){
+      var canvas = document.getElementById( 'bread' + focused );
+      var ctx = canvas.getContext("2d");
+      // flow diagram background
+      ctx.strokeStyle = hexBorderColor;
+      var hlupX = originX + i_hex*(hxW+mPx); // hex leftmost upper point x
+      ctx.strokeRect(hlupX    , hlupY    ,   hxW    , hxH      );
+      ctx.fillStyle = i_hex == focused? hexFocusColor : hexFillColor; // background
+      ctx.fillRect(  hlupX+bPx, hlupY+bPx,   hxW-bPx, hxH-2*bPx); // why 2*bPx???
+    }
+
+    // overwrite by triangles
+    for( var i_hex = 0; i_hex < sections.length; ++ i_hex ){
+      var canvas = document.getElementById( 'bread' + focused );
+      var ctx = canvas.getContext("2d");
+      ctx.lineWidth = hexBorderWidth;
+      ctx.strokeStyle = hexBorderColor;
+      ctx.fillStyle = i_hex == focused? hexFocusColor : hexFillColor; // background
+      var hlupX = originX + i_hex*(hxW+mPx); // hex leftmost upper point x
+      ctx.beginPath();
+      ctx.moveTo(hlupX+hxW    , hlupY);
+      ctx.lineTo(hlupX+hxW+trW, hlupY+hxH/2);
+      ctx.lineTo(hlupX+hxW    , hlupY+hxH);
+      ctx.fill();
+      ctx.closePath();
+      ctx.stroke();
+      for( var i=0; i<3; ++i ){
+        // in order to make opaque
+        ctx.strokeStyle = i_hex == focused ? hexFocusColor : hexFillColor; // background
+        ctx.beginPath();
+        ctx.moveTo(hlupX+hxW    , hlupY+bPx);
+        ctx.lineTo(hlupX+hxW    , hlupY+hxH-bPx);
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+
+    }
+      var canvas = document.getElementById( 'bread' + focused );
+      var ctx = canvas.getContext("2d");
+      // ctx.fillStyle = "rgb(14,47,92)"; // background
+      ctx.fillStyle = hexFillColor; // background
+      // ctx.fillStyle = "rgb(14,47,0E2F5C92)"; // background
+      // ctx.fillRect (0, 0, 1000, total_height);
+
+
+    for( var i_hex = 0; i_hex < sections.length; ++i_hex){
+
+      ctx.font = text_size + "px Meiryo";
+      var hlupX = originX + i_hex*(hxW+mPx); // FIXME duplicate
+      ctx.fillStyle = "rgb(255,255,255)";
+      // ctx.fillText(' > ' , -25+padding*sections.charwidth[i_hex-1], total_height*9/10);
+      // fillText(text,x,y[,maxWidth])
+      if( i_hex === focused ){
+        // ctx.fillStyle = "rgb(255,255,0)";
+        ctx.fillText(sections[i_hex], hlupX + hxL, htextY);
+      }else{
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.fillText(sections[i_hex], hlupX + hxL, htextY);
+      }
+
+    }
+  }
+
+  // save
+
+  var type = 'image/png'
+  var downloader = document.getElementById('downloader');
+  for( var i = 0; i <= sections.length; ++i ){
+    var canvas = document.getElementById( 'bread' + i );
+    var dataurl = canvas.toDataURL(type);
+    // var bin = atob(dataurl.split(',')[1]);
+    // var buffer = new Uint8Array(bin.length);
+    // for (var i = 0; i < bin.length; i++) {
+    //   buffer[i] = bin.charCodeAt(i);
+    // }
+    // var blob = new Blob([buffer.buffer], {type: type});
+    // var url = window.URL.createObjectURL(blob);
+    var elem = document.createElement('img');
+    // elem.href = url
+    elem.src = dataurl;
+    // elem.innerHTML = "ダウンロード"
+    downloader.appendChild(elem)
+    downloader.appendChild( document.createElement('p') )
+
+  }
+}
+</script>
+</head>
+
+<body onload="page_onload();">
+  <div id="downloader"></div>
+  <p>(↓canvas elements)</p>
+  <p></p>
+  <p></p>
+  <p></p>
+<div id='indexcanvas'></div>
+  <canvas id="red_box" width="1000" height="600"></canvas>
+</body>
+
+</html>

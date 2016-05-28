@@ -5,7 +5,12 @@
 
 function page_onload()
 {
-  sections = ["背景","提案手法","結果","まとめ","今後の課題","質疑応答"]
+
+  // var sections = ["背景","関連研究","提案手法","評価","結論", "今後の課題"]
+  var sections = ["機能説明(現状と予定)", "競合分析", "打ち出し方", "提案動機", "留意事項"]
+  var total_width = 650
+  var padding = total_width / 33
+
   sections.charwidth = [];
   for( var i = 0; i < sections.length; ++i ){
     if( i > 0 ){
@@ -18,9 +23,7 @@ function page_onload()
   console.log(sections.charwidth)
 
   var total_height = 30;
-  var total_width = 700
   var text_size = 20
-      padding = total_width / 33
 
 
   for( var i = 0; i < sections.length; ++i ){
@@ -36,7 +39,9 @@ function page_onload()
   for( var focused = 0; focused < sections.length; ++focused){
       var canvas = document.getElementById( 'bread' + focused );
       var ctx = canvas.getContext("2d");
-      ctx.fillStyle = "rgb(14,47,92)"; // background
+      // ctx.fillStyle = "rgb(14,47,92)"; // background
+      ctx.fillStyle = "rgb(15,62,102)"; // background
+      // ctx.fillStyle = "rgb(14,47,0E2F5C92)"; // background
       ctx.fillRect (0, 0, 1000, total_height);
 
     for( var i = 0; i < sections.length; ++i){
@@ -44,7 +49,7 @@ function page_onload()
       ctx.font = text_size + "px Meiryo";
 
       if( i === focused ){
-        ctx.font = (text_size + 3) + "px bold Meiryo";
+        ctx.font = (text_size + 3) + "px Meiryo";
       }else{
       }
       if( i !== 0 ){
@@ -52,7 +57,7 @@ function page_onload()
         ctx.fillText(' > ' , -25+padding*sections.charwidth[i-1], total_height*9/10);
         if( i === focused )
           ctx.fillStyle = "rgb(255,255,0)";
-        ctx.fillText(sections[i], 10+padding*sections.charwidth[i-1], total_height*9/10);
+        ctx.fillText(sections[i], 10+padding*sections.charwidth[i-1]-padding*0.5, total_height*9/10);
       }else{
         if( i === focused ) ctx.fillStyle = "rgb(255,255,0)";
         else                ctx.fillStyle = "rgb(255,255,255)";
